@@ -4,7 +4,15 @@ from typing import Optional
 from auth import get_current_user
 from database import get_db
 from fastapi import APIRouter, Depends, HTTPException, status
-from models import Booking, ChatbotLog, CounselorReport, Feedback, MoodEntry, User
+from models import (
+    Assessment,
+    Booking,
+    ChatbotLog,
+    CounselorReport,
+    Feedback,
+    MoodEntry,
+    User,
+)
 from pydantic import BaseModel
 from schemas import CounselorStatus
 from sqlalchemy import and_, func
