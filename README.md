@@ -162,7 +162,7 @@ DATABASE_URL=mysql+pymysql://username:password@localhost/mello_db
 GEMINI_API_KEY=your_gemini_api_key_here
 DEBUG=True
 SECRET_KEY=your_secret_key_here
-FIREBASE_CREDENTIALS_PATH=path/to/firebase-credentials.json
+FIREBASE_ADMIN_CREDENTIALS_PATH=path/to/firebase-credentials.json
 ```
 
 #### Frontend (.env in mello-frontend/)
