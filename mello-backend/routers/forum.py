@@ -67,7 +67,7 @@ async def create_post(
         content=post.content,
         category=post.category,
         is_anonymous=post.is_anonymous,
-        is_moderated=False,  # Requires moderation
+        is_moderated=True,  # Requires moderation
         is_flagged=False
     )
     
