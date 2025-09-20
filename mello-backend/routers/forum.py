@@ -33,7 +33,7 @@ async def get_posts(
 ):
     """Get forum posts with optional category filtering"""
     query = db.query(ForumPost).filter(
-        and_(ForumPost.is_moderated == True, ForumPost.moderation_action != "removed")
+        and_(ForumPost.is_moderated, ForumPost.moderation_action != "removed")
     )
 
     if category:

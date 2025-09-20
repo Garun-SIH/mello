@@ -19,7 +19,7 @@ async def get_published_newsletters(
     """Get published newsletters for users"""
     newsletters = (
         db.query(Newsletter)
-        .filter(Newsletter.is_published == True)
+        .filter(Newsletter.is_published)
         .order_by(Newsletter.published_at.desc())
         .offset(offset)
         .limit(limit)
@@ -50,7 +50,7 @@ async def get_newsletter_by_id(
     """Get a specific newsletter by ID"""
     newsletter = (
         db.query(Newsletter)
-        .filter(Newsletter.id == newsletter_id, Newsletter.is_published == True)
+        .filter(Newsletter.id == newsletter_id, Newsletter.is_published)
         .first()
     )
 
@@ -80,7 +80,7 @@ async def get_latest_newsletters_count(
     start_date = datetime.now() - timedelta(days=days)
     count = (
         db.query(Newsletter)
-        .filter(Newsletter.is_published == True, Newsletter.published_at >= start_date)
+        .filter(Newsletter.is_published, Newsletter.published_at >= start_date)
         .count()
     )
 

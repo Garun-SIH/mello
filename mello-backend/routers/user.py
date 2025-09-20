@@ -217,7 +217,7 @@ async def get_newsletters(
     """Get published newsletters"""
     newsletters = (
         db.query(Newsletter)
-        .filter(Newsletter.is_published == True)
+        .filter(Newsletter.is_published)
         .order_by(desc(Newsletter.published_at))
         .all()
     )

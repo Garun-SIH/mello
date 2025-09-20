@@ -132,7 +132,7 @@ async def get_unmoderated_posts(
     admin: User = Depends(get_admin_user), db: Session = Depends(get_db)
 ):
     """Get all unmoderated forum posts"""
-    posts = db.query(Post).filter(Post.moderated == False).all()
+    posts = db.query(Post).filter(Post.moderated.is_(False)).all()
 
     return [
         {
@@ -376,7 +376,7 @@ async def get_flagged_posts(
     admin: User = Depends(get_admin_user), db: Session = Depends(get_db)
 ):
     """Get all flagged forum posts"""
-    posts = db.query(ForumPost).filter(ForumPost.is_flagged == True).all()
+    posts = db.query(ForumPost).filter(ForumPost.is_flagged).all()
 
     return [
         {
