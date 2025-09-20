@@ -93,7 +93,7 @@ async def get_my_feedback(
     result = []
     for fb in feedback:
         counselor = db.query(User).filter(User.id == fb.counselor_id).first()
-        booking = db.query(Booking).filter(Booking.id == fb.booking_id).first()
+        # booking = db.query(Booking).filter(Booking.id == fb.booking_id).first()
 
         result.append(
             {
