@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_, desc
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime, date, timedelta
 from pydantic import BaseModel
 

@@ -1,10 +1,8 @@
-from fastapi import FastAPI, HTTPException, Depends
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-import os
 from dotenv import load_dotenv
 
-from database import SessionLocal, engine
+from database import engine
 from models import Base
 from routers import chat, booking, resources, forum, analytics, assessments, auth, admin, counselor, user, mood, newsletter, feedback
 from firebase_config import initialize_firebase

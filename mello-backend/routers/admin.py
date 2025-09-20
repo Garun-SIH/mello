@@ -1,13 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import func, and_
-from typing import List, Optional
+from typing import Optional
 from datetime import datetime, timedelta
-import json
 
 from database import get_db
 from models import (User, UserRole, CounselorStatus, Booking, Post, Resource, Assessment, 
-                   ChatbotLog, MoodEntry, Newsletter, CounselorReport, ForumPost, ForumReply, Feedback)
+                   ChatbotLog, MoodEntry, Newsletter, CounselorReport, ForumPost)
 from auth import get_admin_user
 from pydantic import BaseModel
 

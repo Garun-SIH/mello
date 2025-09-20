@@ -1,4 +1,3 @@
-from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import (Base, Resource, Post, User, UserRole, CounselorStatus, Booking, Feedback, 
                    Newsletter, CounselorReport, MoodEntry, ForumPost, ForumReply, Assessment)

@@ -4,7 +4,7 @@ from sqlalchemy import func
 from datetime import datetime, timedelta
 
 from database import get_db
-from models import ChatbotLog, Booking, Post, Resource
+from models import ChatbotLog, Booking, Post
 from schemas import AnalyticsResponse
 
 router = APIRouter()

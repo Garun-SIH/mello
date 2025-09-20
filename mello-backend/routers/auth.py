@@ -1,8 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-import firebase_admin
-from firebase_admin import auth as firebase_auth
 
 from database import get_db
 from models import User, UserRole, CounselorStatus

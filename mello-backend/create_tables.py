@@ -6,7 +6,6 @@ Run this script to set up the database with all required tables.
 from sqlalchemy import create_engine
 from models import Base
 from database import DATABASE_URL
-import os
 from dotenv import load_dotenv
 
 # Load environment variables
