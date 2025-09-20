@@ -178,7 +178,7 @@ REACT_APP_FIREBASE_APP_ID=1:123456789:web:abcdef123456
 
 ### Getting Gemini API Key
 
-1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
 2. Create a new API key
 3. Add it to your `.env` file
 
