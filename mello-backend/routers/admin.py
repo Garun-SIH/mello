@@ -148,7 +148,7 @@ async def get_unmoderated_posts(
 
 
 @router.put("/forum/posts/{post_id}/moderate")
-async def moderate_post(
+async def moderate_post_v1(
     post_id: int,
     action: str,  # approve or delete
     admin: User = Depends(get_admin_user),
@@ -394,7 +394,7 @@ async def get_flagged_posts(
 
 
 @router.post("/forum/moderate/{post_id}")
-async def moderate_post(
+async def moderate_post_v2(
     post_id: int,
     action: str,  # approve, remove
     admin: User = Depends(get_admin_user),
