@@ -283,7 +283,7 @@ For support and questions:
 
 ## 🏆 Smart India Hackathon
 
-Built for SIH 2024 - Digital Psychological Intervention System for College Students
+Built for SIH 2025 - Digital Psychological Intervention System for College Students
 
 **Team**: Mello Development Team  
 **Category**: Software  
