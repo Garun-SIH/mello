@@ -1,15 +1,31 @@
-from database import SessionLocal, engine
-from models import (Base, Resource, Post, User, UserRole, CounselorStatus, Booking, Feedback, 
-                   Newsletter, CounselorReport, MoodEntry, ForumPost, ForumReply, Assessment)
-from datetime import datetime, timedelta
 import json
+from datetime import datetime, timedelta
+
+from database import SessionLocal, engine
+from models import (
+    Assessment,
+    Base,
+    Booking,
+    CounselorReport,
+    CounselorStatus,
+    Feedback,
+    ForumPost,
+    ForumReply,
+    MoodEntry,
+    Newsletter,
+    Post,
+    Resource,
+    User,
+    UserRole,
+)
+
 
 def create_seed_data():
     # Create tables
     Base.metadata.create_all(bind=engine)
-    
+
     db = SessionLocal()
-    
+
     try:
         # Clear existing data
         db.query(ForumReply).delete()
@@ -24,16 +40,16 @@ def create_seed_data():
         db.query(Resource).delete()
         db.query(User).delete()
         db.commit()
-        
+
         # Seed admin user
         admin_user = User(
             firebase_uid="admin_seed_uid",
             email="admin@mello.com",
             name="System Administrator",
-            role=UserRole.ADMIN
+            role=UserRole.ADMIN,
         )
         db.add(admin_user)
-        
+
         # Seed counselors
         counselors = [
             User(
@@ -45,7 +61,7 @@ def create_seed_data():
                 license_number="PSY12345",
                 phone_number="+91-9876543210",
                 address="Mumbai, Maharashtra",
-                counselor_status=CounselorStatus.APPROVED
+                counselor_status=CounselorStatus.APPROVED,
             ),
             User(
                 firebase_uid="counselor_2_uid",
@@ -56,7 +72,7 @@ def create_seed_data():
                 license_number="PSY67890",
                 phone_number="+91-9876543211",
                 address="Delhi, India",
-                counselor_status=CounselorStatus.APPROVED
+                counselor_status=CounselorStatus.APPROVED,
             ),
             User(
                 firebase_uid="counselor_3_uid",
@@ -67,13 +83,13 @@ def create_seed_data():
                 license_number="PSY11111",
                 phone_number="+91-9876543212",
                 address="Bangalore, Karnataka",
-                counselor_status=CounselorStatus.APPROVED
-            )
+                counselor_status=CounselorStatus.APPROVED,
+            ),
         ]
-        
+
         for counselor in counselors:
             db.add(counselor)
-        
+
         # Seed sample users
         sample_users = [
             User(
@@ -83,7 +99,7 @@ def create_seed_data():
                 role=UserRole.USER,
                 age=20,
                 university="IIT Delhi",
-                preferred_language="en"
+                preferred_language="en",
             ),
             User(
                 firebase_uid="user_2_uid",
@@ -92,16 +108,16 @@ def create_seed_data():
                 role=UserRole.USER,
                 age=19,
                 university="Mumbai University",
-                preferred_language="hi"
-            )
+                preferred_language="hi",
+            ),
         ]
-        
+
         for user in sample_users:
             db.add(user)
-        
+
         # Commit users first to get IDs
         db.commit()
-        
+
         # Create sample feedback with new fields
         feedback_entries = [
             Feedback(
@@ -110,10 +126,12 @@ def create_seed_data():
                 feedback_type="counselor",
                 rating=5,
                 feedback_text="Very helpful session, felt much better afterwards",
-                helpful_aspects=json.dumps(["Active listening", "Practical advice", "Empathetic approach"]),
+                helpful_aspects=json.dumps(
+                    ["Active listening", "Practical advice", "Empathetic approach"]
+                ),
                 improvement_suggestions=json.dumps([]),
                 would_recommend=True,
-                session_date=datetime.now() - timedelta(days=1)
+                session_date=datetime.now() - timedelta(days=1),
             ),
             Feedback(
                 user_id=sample_users[1].id,
@@ -121,16 +139,18 @@ def create_seed_data():
                 feedback_type="counselor",
                 rating=4,
                 feedback_text="Good advice, would recommend to others",
-                helpful_aspects=json.dumps(["Professional knowledge", "Patient approach"]),
+                helpful_aspects=json.dumps(
+                    ["Professional knowledge", "Patient approach"]
+                ),
                 improvement_suggestions=json.dumps(["More time for discussion"]),
                 would_recommend=True,
-                session_date=datetime.now() - timedelta(days=2)
-            )
+                session_date=datetime.now() - timedelta(days=2),
+            ),
         ]
-        
+
         for feedback in feedback_entries:
             db.add(feedback)
-        
+
         # Create sample bookings
         bookings = [
             Booking(
@@ -139,7 +159,7 @@ def create_seed_data():
                 preferred_datetime=datetime.now() + timedelta(days=1),
                 issue_description="Feeling anxious about exams",
                 urgency="high",
-                status="confirmed"
+                status="confirmed",
             ),
             Booking(
                 user_id=sample_users[1].id,
@@ -147,7 +167,7 @@ def create_seed_data():
                 preferred_datetime=datetime.now() + timedelta(days=2),
                 issue_description="Need help with stress management",
                 urgency="medium",
-                status="pending"
+                status="pending",
             ),
             Booking(
                 user_id=sample_users[0].id,
@@ -155,13 +175,13 @@ def create_seed_data():
                 preferred_datetime=datetime.now() + timedelta(days=3),
                 issue_description="Relationship issues",
                 urgency="medium",
-                status="completed"
-            )
+                status="completed",
+            ),
         ]
-        
+
         for booking in bookings:
             db.add(booking)
-        
+
         # Seed resources
         resources = [
             # Meditation and Wellness Guides
@@ -173,7 +193,7 @@ def create_seed_data():
                 description="Comprehensive collection of guided meditations for mindfulness, compassion, and healing.",
                 category="mindfulness",
                 duration="Various",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="UCLA Mindful Meditations",
@@ -183,7 +203,7 @@ def create_seed_data():
                 description="Free guided meditations from UCLA's Mindful Awareness Research Center.",
                 category="mindfulness",
                 duration="3-19 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Insight Timer - Meditation App",
@@ -193,7 +213,7 @@ def create_seed_data():
                 description="World's largest library of free guided meditations and mindfulness content.",
                 category="mindfulness",
                 duration="Various",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Mindfulness Audio Videos - UCSD",
@@ -203,7 +223,7 @@ def create_seed_data():
                 description="Guided mindfulness practices from UC San Diego's Center for Integrative Health.",
                 category="mindfulness",
                 duration="10-45 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Free Guided Meditations - Meditate Happier",
@@ -213,7 +233,7 @@ def create_seed_data():
                 description="Collection of free guided meditations for stress relief and mental clarity.",
                 category="stress",
                 duration="5-30 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="YSSOFINDIA Guided Meditations",
@@ -223,7 +243,7 @@ def create_seed_data():
                 description="Guided meditation practices in Hindi for inner peace and spiritual growth.",
                 category="mindfulness",
                 duration="15-45 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Isha Kriya Meditation Program",
@@ -233,7 +253,7 @@ def create_seed_data():
                 description="Simple yet powerful meditation technique for beginners by Sadhguru.",
                 category="mindfulness",
                 duration="12-18 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Free the Mind - Hindi Breathing Exercises",
@@ -243,7 +263,7 @@ def create_seed_data():
                 description="Breathing exercises and meditation techniques in Hindi for mental wellness.",
                 category="stress",
                 duration="10-20 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="iDANIM Meditation Platform",
@@ -253,7 +273,7 @@ def create_seed_data():
                 description="Indian meditation app with guided sessions for stress, anxiety, and sleep.",
                 category="mindfulness",
                 duration="5-60 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Art of Living Online Guided Meditation",
@@ -263,7 +283,7 @@ def create_seed_data():
                 description="Online guided meditation sessions from Art of Living foundation.",
                 category="mindfulness",
                 duration="20-40 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Headspace for Students",
@@ -273,7 +293,7 @@ def create_seed_data():
                 description="Student-focused meditation and mindfulness exercises for academic stress.",
                 category="stress",
                 duration="3-20 min",
-                uploaded_by=admin_user.id
+                uploaded_by=admin_user.id,
             ),
             Resource(
                 title="Calm App - Daily Meditation",
@@ -283,13 +303,13 @@ def create_seed_data():
                 description="Daily meditation sessions for anxiety, sleep, and focus improvement.",
                 category="anxiety",
                 duration="10-25 min",
-                uploaded_by=admin_user.id
-            )
+                uploaded_by=admin_user.id,
+            ),
         ]
-        
+
         for resource in resources:
             db.add(resource)
-        
+
         # Seed forum posts
         posts = [
             Post(
@@ -300,7 +320,7 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=15,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             Post(
                 user_id=sample_users[1].id,
@@ -310,7 +330,7 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=23,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             Post(
                 user_id=sample_users[0].id,
@@ -320,7 +340,7 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=31,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             Post(
                 user_id=sample_users[1].id,
@@ -330,7 +350,7 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=18,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             Post(
                 user_id=sample_users[0].id,
@@ -340,7 +360,7 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=27,
-                timestamp=datetime.now()
+                timestamp=datetime.now(),
             ),
             Post(
                 user_id=sample_users[1].id,
@@ -350,13 +370,13 @@ def create_seed_data():
                 moderated=True,
                 moderated_by=admin_user.id,
                 likes=19,
-                timestamp=datetime.now()
-            )
+                timestamp=datetime.now(),
+            ),
         ]
-        
+
         for post in posts:
             db.add(post)
-        
+
         # Create sample newsletters
         newsletters = [
             Newsletter(
@@ -364,27 +384,27 @@ def create_seed_data():
                 content="Academic stress is a common experience for college students. Here are some effective strategies to manage it...",
                 author_id=admin_user.id,
                 is_published=True,
-                published_at=datetime.now() - timedelta(days=7)
+                published_at=datetime.now() - timedelta(days=7),
             ),
             Newsletter(
                 title="The Importance of Sleep for Mental Health",
                 content="Quality sleep is crucial for mental well-being. This newsletter explores the connection between sleep and mental health...",
                 author_id=admin_user.id,
                 is_published=True,
-                published_at=datetime.now() - timedelta(days=14)
+                published_at=datetime.now() - timedelta(days=14),
             ),
             Newsletter(
                 title="Building Resilience in College",
                 content="Resilience is the ability to bounce back from challenges. Learn how to develop this important skill...",
                 author_id=admin_user.id,
                 is_published=True,
-                published_at=datetime.now() - timedelta(days=21)
-            )
+                published_at=datetime.now() - timedelta(days=21),
+            ),
         ]
-        
+
         for newsletter in newsletters:
             db.add(newsletter)
-        
+
         # Create sample mood entries
         mood_entries = [
             MoodEntry(
@@ -394,7 +414,7 @@ def create_seed_data():
                 stress_level=4,
                 sleep_hours=7.5,
                 notes="Feeling good today, got enough sleep",
-                date=datetime.now() - timedelta(days=1)
+                date=datetime.now() - timedelta(days=1),
             ),
             MoodEntry(
                 user_id=sample_users[0].id,
@@ -403,7 +423,7 @@ def create_seed_data():
                 stress_level=7,
                 sleep_hours=5.0,
                 notes="Stressed about upcoming exam",
-                date=datetime.now() - timedelta(days=2)
+                date=datetime.now() - timedelta(days=2),
             ),
             MoodEntry(
                 user_id=sample_users[1].id,
@@ -412,13 +432,13 @@ def create_seed_data():
                 stress_level=3,
                 sleep_hours=8.0,
                 notes="Great day, feeling motivated",
-                date=datetime.now() - timedelta(days=1)
-            )
+                date=datetime.now() - timedelta(days=1),
+            ),
         ]
-        
+
         for mood_entry in mood_entries:
             db.add(mood_entry)
-        
+
         # Create sample assessments
         assessments = [
             Assessment(
@@ -428,7 +448,7 @@ def create_seed_data():
                 total_score=12,
                 severity_level="Mild",
                 recommendations="Consider counseling sessions",
-                completed_at=datetime.now() - timedelta(days=3)
+                completed_at=datetime.now() - timedelta(days=3),
             ),
             Assessment(
                 user_id=sample_users[1].id,
@@ -437,13 +457,13 @@ def create_seed_data():
                 total_score=28,
                 severity_level="Moderate",
                 recommendations="Regular therapy recommended",
-                completed_at=datetime.now() - timedelta(days=5)
-            )
+                completed_at=datetime.now() - timedelta(days=5),
+            ),
         ]
-        
+
         for assessment in assessments:
             db.add(assessment)
-        
+
         # Create sample counselor reports
         counselor_reports = [
             CounselorReport(
@@ -456,7 +476,7 @@ def create_seed_data():
                 priority="medium",
                 status="submitted",
                 session_date=datetime.now() - timedelta(days=1),
-                submitted_at=datetime.now() - timedelta(hours=2)
+                submitted_at=datetime.now() - timedelta(hours=2),
             ),
             CounselorReport(
                 counselor_id=counselors[1].id,
@@ -467,13 +487,13 @@ def create_seed_data():
                 recommendations="Begin cognitive behavioral therapy. Schedule weekly sessions for first month.",
                 priority="medium",
                 status="draft",
-                session_date=datetime.now() - timedelta(days=3)
-            )
+                session_date=datetime.now() - timedelta(days=3),
+            ),
         ]
-        
+
         for report in counselor_reports:
             db.add(report)
-        
+
         # Create sample forum posts with new structure
         forum_posts = [
             ForumPost(
@@ -487,7 +507,7 @@ def create_seed_data():
                 moderated_by=admin_user.id,
                 moderation_action="approved",
                 reply_count=5,
-                like_count=15
+                like_count=15,
             ),
             ForumPost(
                 user_id=sample_users[1].id,
@@ -500,15 +520,15 @@ def create_seed_data():
                 moderated_by=admin_user.id,
                 moderation_action="approved",
                 reply_count=8,
-                like_count=23
-            )
+                like_count=23,
+            ),
         ]
-        
+
         for forum_post in forum_posts:
             db.add(forum_post)
-        
+
         db.commit()
-        
+
         # Create sample forum replies
         forum_replies = [
             ForumReply(
@@ -516,28 +536,29 @@ def create_seed_data():
                 user_id=sample_users[1].id,
                 content="I use the Pomodoro technique - 25 minutes focused study, 5 minute break. Really helps with procrastination!",
                 is_anonymous=True,
-                like_count=8
+                like_count=8,
             ),
             ForumReply(
                 post_id=forum_posts[1].id,
                 user_id=sample_users[0].id,
                 content="Try meditation apps before bed. I use Headspace and it really helps calm my racing thoughts.",
                 is_anonymous=True,
-                like_count=12
-            )
+                like_count=12,
+            ),
         ]
-        
+
         for reply in forum_replies:
             db.add(reply)
-        
+
         db.commit()
         print("Seed data created successfully!")
-        
+
     except Exception as e:
         print(f"Error creating seed data: {e}")
         db.rollback()
     finally:
         db.close()
+
 
 if __name__ == "__main__":
     create_seed_data()
