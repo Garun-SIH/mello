@@ -1,13 +1,24 @@
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
-import os
+from database import engine
 from dotenv import load_dotenv
-
-from database import SessionLocal, engine
-from models import Base
-from routers import chat, booking, resources, forum, analytics, assessments, auth, admin, counselor, user, mood, newsletter, feedback
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from firebase_config import initialize_firebase
+from models import Base
+from routers import (
+    admin,
+    analytics,
+    assessments,
+    auth,
+    booking,
+    chat,
+    counselor,
+    feedback,
+    forum,
+    mood,
+    newsletter,
+    resources,
+    user,
+)
 
 # Load environment variables
 load_dotenv()
@@ -16,9 +27,13 @@ load_dotenv()
 try:
     firebase_initialized = initialize_firebase()
     if not firebase_initialized:
-        print("Warning: Firebase initialization failed. Authentication features may not work.")
+        print(
+            "Warning: Firebase initialization failed. Authentication features may not work."
+        )
 except Exception as e:
-    print(f"Warning: Firebase initialization error: {str(e)}. Continuing without Firebase.")
+    print(
+        f"Warning: Firebase initialization error: {str(e)}. Continuing without Firebase."
+    )
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -26,7 +41,7 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title="Mello - Digital Psychological Intervention System",
     description="MVP for Smart India Hackathon - Mental Health Support for College Students",
-    version="1.0.0"
+    version="1.0.0",
 )
 
 # Configure CORS
@@ -54,14 +69,18 @@ app.include_router(mood.router, prefix="/api/mood", tags=["Mood Tracking"])
 app.include_router(newsletter.router, prefix="/api/newsletter", tags=["Newsletter"])
 app.include_router(feedback.router, prefix="/api/feedback", tags=["Feedback"])
 
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to Mello - Digital Psychological Intervention System"}
+
 
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "mello-backend"}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
