@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, Image, Video, BookOpen, Plus, Trash2, Edit } from 'lucide-react';
+import { Upload, FileText,BookOpen, Plus, Trash2, Edit } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 const ContentUpload = () => {
@@ -19,7 +19,7 @@ const ContentUpload = () => {
 
   useEffect(() => {
     fetchExistingContent();
-  }, [contentType]);
+  });
 
   const fetchExistingContent = async () => {
     try {
@@ -105,7 +105,7 @@ const ContentUpload = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this content?')) return;
+    if (!window.confirm('Are you sure you want to delete this content?')) return;
 
     try {
       const axios = getAuthenticatedAxios();

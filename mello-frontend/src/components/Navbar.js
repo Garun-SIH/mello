@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Heart, MessageCircle, Calendar, BookOpen, Users, BarChart3, ClipboardList, Shield, UserCheck, TrendingUp, FileText, Upload, Eye } from 'lucide-react';
+import { Heart, MessageCircle, Calendar, BookOpen, Users, BarChart3, ClipboardList,UserCheck, TrendingUp, FileText, Upload, Eye } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Navbar = () => {

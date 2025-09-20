@@ -10,7 +10,7 @@ const DashboardCard = ({ title, value, icon: Icon, color = 'blue', trend, descri
     indigo: 'bg-indigo-500 text-indigo-600 bg-indigo-50',
   };
 
-  const [bgColor, textColor, lightBg] = colorClasses[color].split(' ');
+  const [textColor, lightBg] = colorClasses[color].split(' ');
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">

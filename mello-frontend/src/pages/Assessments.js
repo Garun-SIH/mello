@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardList, Brain, Heart, TrendingUp, CheckCircle, AlertCircle, Info } from 'lucide-react';
+import {Brain, Heart, TrendingUp, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import axios from 'axios';
 
 const Assessments = () => {
@@ -41,7 +41,7 @@ const Assessments = () => {
 
   useEffect(() => {
     fetchHistory();
-  }, []);
+  });
 
   const fetchHistory = async () => {
     try {

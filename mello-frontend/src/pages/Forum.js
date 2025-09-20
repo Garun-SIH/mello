@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageSquare, Heart, Plus, Filter, Clock, User } from 'lucide-react';
+import { MessageSquare, Heart, Plus, Clock, User } from 'lucide-react';
 import axios from 'axios';
 
 const Forum = () => {
@@ -18,7 +18,7 @@ const Forum = () => {
   useEffect(() => {
     fetchPosts();
     fetchCategories();
-  }, [selectedCategory]);
+  });
 
   const fetchPosts = async () => {
     try {

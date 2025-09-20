@@ -4,8 +4,7 @@ import {
   Calendar, 
   Users, 
   TrendingUp, 
-  Clock, 
-  CheckCircle, 
+  Clock,
   AlertCircle,
   FileText,
   MessageSquare
@@ -20,7 +19,7 @@ export default function CounselorDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
-  }, []);
+  });
 
   const fetchDashboardData = async () => {
     try {

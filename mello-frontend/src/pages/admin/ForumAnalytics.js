@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
+import {XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { MessageSquare, Users, AlertTriangle, TrendingUp, Eye, Flag, Trash2, CheckCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -23,7 +23,7 @@ const ForumAnalytics = () => {
     fetchFlaggedContent();
     fetchActivityData();
     fetchCategoryData();
-  }, []);
+  });
 
   const fetchAnalytics = async () => {
     try {

@@ -1,7 +1,5 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { BarChart3, Users, Calendar, MessageCircle, TrendingUp, Heart, FileText, Shield, Activity, Brain, Smile } from 'lucide-react';
-import DashboardCard from './DashboardCard';
 import UserDashboard from '../pages/UserDashboard';
 import CounselorDashboard from '../pages/CounselorDashboard';
 import AdminDashboard from '../pages/AdminDashboard';
