@@ -135,7 +135,7 @@ async def get_patient_analytics(
     assessments = (
         db.query(Assessment)
         .filter(Assessment.user_id.in_(patient_ids))
-        .order_by(Assessment.created_at.desc())
+        .order_by(Assessment.completed_at.desc())
         .limit(100)
         .all()
     )
@@ -508,7 +508,7 @@ async def get_patient_history(
     assessments = (
         db.query(Assessment)
         .filter(Assessment.user_id == patient_id)
-        .order_by(Assessment.created_at.desc())
+        .order_by(Assessment.completed_at.desc())
         .limit(5)
         .all()
     )
