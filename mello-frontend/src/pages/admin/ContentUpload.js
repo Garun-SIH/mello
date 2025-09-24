@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText,BookOpen, Plus, Trash2, Edit } from 'lucide-react';
+import { Upload, FileText, BookOpen, Plus, Trash2, Edit, File, Video, Music, FileImage, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { uploadFileToStorage, formatFileSize, validateFile } from '../../utils/firebaseStorage';
 
 const ContentUpload = () => {
   const { getAuthenticatedAxios } = useAuth();
@@ -16,10 +17,41 @@ const ContentUpload = () => {
   const [existingContent, setExistingContent] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  // File upload states
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const [firebaseStatus, setFirebaseStatus] = useState('checking');
 
   useEffect(() => {
     fetchExistingContent();
-  });
+    checkFirebaseConfig();
+  }, []);
+
+  const checkFirebaseConfig = () => {
+    const firebaseConfig = {
+      apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+      authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+      projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+      storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+      messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+      appId: process.env.REACT_APP_FIREBASE_APP_ID
+    };
+    
+    const missingConfigs = Object.entries(firebaseConfig)
+      .filter(([key, value]) => !value)
+      .map(([key]) => key);
+    
+    if (missingConfigs.length > 0) {
+      setFirebaseStatus('not-configured');
+      console.warn('Firebase not configured. Missing:', missingConfigs);
+    } else {
+      setFirebaseStatus('configured');
+      console.log('Firebase configuration found');
+    }
+  };
 
   const fetchExistingContent = async () => {
     try {
@@ -44,6 +76,112 @@ const ContentUpload = () => {
     }
   };
 
+  // File handling functions
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadError('');
+    
+    // If category is selected, validate against it
+    if (formData.category) {
+      const fileValidation = getFileValidation(formData.category);
+      const validation = validateFile(file, fileValidation.allowedTypes, fileValidation.maxSizeMB);
+      
+      if (!validation.isValid) {
+        setUploadError(validation.errors.join(', '));
+        return;
+      }
+    } else {
+      // If no category selected, just check general file size (max 100MB)
+      const maxSizeBytes = 100 * 1024 * 1024; // 100MB
+      if (file.size > maxSizeBytes) {
+        setUploadError('File size must be less than 100MB. Please select a category for specific limits.');
+        return;
+      }
+    }
+    
+    setSelectedFile(file);
+  };
+
+  const getFileValidation = (category) => {
+    switch (category) {
+      case 'video':
+        return {
+          allowedTypes: ['video/mp4', 'video/webm', 'video/ogg'],
+          maxSizeMB: 100 // 100MB for videos
+        };
+      case 'audio':
+        return {
+          allowedTypes: ['audio/mp3', 'audio/wav', 'audio/ogg', 'audio/mpeg'],
+          maxSizeMB: 50 // 50MB for audio
+        };
+      case 'article':
+        return {
+          allowedTypes: ['application/pdf', 'text/plain', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+          maxSizeMB: 10 // 10MB for documents
+        };
+      case 'exercise':
+        return {
+          allowedTypes: ['application/pdf', 'image/jpeg', 'image/png', 'image/gif'],
+          maxSizeMB: 20 // 20MB for exercise materials
+        };
+      default:
+        return {
+          allowedTypes: [],
+          maxSizeMB: 0
+        };
+    }
+  };
+
+  const uploadFileToFirebase = async () => {
+    if (!selectedFile) return null;
+    
+    setIsUploading(true);
+    setUploadProgress(0);
+    
+    try {
+      // Check if Firebase is configured
+      const firebaseConfig = {
+        apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+        authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+        projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+        storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+        messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+        appId: process.env.REACT_APP_FIREBASE_APP_ID
+      };
+      
+      // Check if any config values are missing
+      const missingConfigs = Object.entries(firebaseConfig)
+        .filter(([key, value]) => !value)
+        .map(([key]) => key);
+      
+      if (missingConfigs.length > 0) {
+        throw new Error(`Firebase configuration missing: ${missingConfigs.join(', ')}. Please check your .env file.`);
+      }
+      
+      console.log('Starting file upload:', selectedFile.name);
+      const storagePath = `resources/${formData.category || 'general'}/`;
+      const downloadURL = await uploadFileToStorage(
+        selectedFile,
+        storagePath,
+        (progress) => {
+          console.log('Upload progress:', progress);
+          setUploadProgress(progress);
+        }
+      );
+      
+      console.log('Upload completed:', downloadURL);
+      setIsUploading(false);
+      return downloadURL;
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsUploading(false);
+      setUploadError('Failed to upload file: ' + error.message);
+      throw error;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -52,6 +190,12 @@ const ContentUpload = () => {
       const axios = getAuthenticatedAxios();
       let endpoint = '';
       let payload = { ...formData };
+
+      // Upload file to Firebase if selected (for resources)
+      if (contentType === 'resource' && selectedFile && !editingId) {
+        const fileURL = await uploadFileToFirebase();
+        payload.url = fileURL; // Use Firebase URL instead of manual URL
+      }
 
       switch (contentType) {
         case 'newsletter':
@@ -83,6 +227,9 @@ const ContentUpload = () => {
         description: ''
       });
       setEditingId(null);
+      setSelectedFile(null);
+      setUploadProgress(0);
+      setUploadError('');
       fetchExistingContent();
     } catch (error) {
       console.error('Error saving content:', error);
@@ -213,21 +360,131 @@ const ContentUpload = () => {
                 >
                   <option value="en">English</option>
                   <option value="hi">Hindi</option>
+                  <option value="ta">Tamil</option>
+                  <option value="te">Telugu</option>
+                  <option value="kn">Kannada</option>
+                  <option value="ml">Malayalam</option>
+                  <option value="mr">Marathi</option>
+                  <option value="ks">Kashmiri</option>
+                  <option value="doi">Dogri</option>
+                  <option value="ur">Urdu</option>
                 </select>
               </div>
             </div>
 
+            {/* File Upload or URL Input */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Resource URL
+                Resource File or URL
               </label>
+              
+              {/* Firebase Status Indicator */}
+              {firebaseStatus === 'not-configured' && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center">
+                  <AlertCircle className="h-4 w-4 text-yellow-500 mr-2" />
+                  <div className="text-sm">
+                    <p className="text-yellow-800 font-medium">Firebase not configured</p>
+                    <p className="text-yellow-600">File upload will not work. Please set up Firebase in your .env file.</p>
+                  </div>
+                </div>
+              )}
+
+              {/* File Upload Section - Always visible */}
+              <div className="mb-4">
+                <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  firebaseStatus === 'configured' 
+                    ? 'border-gray-300 hover:border-primary-400' 
+                    : 'border-gray-200 bg-gray-50'
+                }`}>
+                  <input
+                    type="file"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="file-upload"
+                    accept={formData.category ? getFileValidation(formData.category).allowedTypes.join(',') : '*/*'}
+                  />
+                  <label htmlFor="file-upload" className="cursor-pointer">
+                    <div className="flex flex-col items-center">
+                      {formData.category === 'video' && <Video className="h-8 w-8 text-gray-400 mb-2" />}
+                      {formData.category === 'audio' && <Music className="h-8 w-8 text-gray-400 mb-2" />}
+                      {formData.category === 'article' && <File className="h-8 w-8 text-gray-400 mb-2" />}
+                      {formData.category === 'exercise' && <FileImage className="h-8 w-8 text-gray-400 mb-2" />}
+                      {!formData.category && <Upload className="h-8 w-8 text-gray-400 mb-2" />}
+                      
+                      <p className="text-sm text-gray-600">
+                        {formData.category 
+                          ? `Click to upload ${formData.category} file or drag and drop`
+                          : 'Click to upload file or drag and drop (select category first for validation)'
+                        }
+                      </p>
+                      {formData.category && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Max size: {getFileValidation(formData.category).maxSizeMB}MB
+                        </p>
+                      )}
+                      {!formData.category && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          Select a category above to see file type restrictions
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                </div>
+                
+                {selectedFile && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
+                        <p className="text-xs text-gray-500">{formatFileSize(selectedFile.size)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedFile(null);
+                          setUploadProgress(0);
+                          setUploadError('');
+                        }}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                    
+                    {isUploading && (
+                      <div className="mt-2">
+                        <div className="bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-primary-600 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${uploadProgress}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{Math.round(uploadProgress)}% uploaded</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                
+                {uploadError && (
+                  <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-lg flex items-center">
+                    <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                    <p className="text-sm text-red-600">{uploadError}</p>
+                  </div>
+                )}
+                
+                <div className="mt-3 text-center text-sm text-gray-500">
+                  OR
+                </div>
+              </div>
+              
+              {/* URL Input */}
               <input
                 type="url"
                 value={formData.url}
                 onChange={(e) => setFormData({...formData, url: e.target.value})}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                placeholder="https://example.com/resource"
-                required
+                placeholder="https://example.com/resource (or upload file above)"
+                required={!selectedFile}
               />
             </div>
 

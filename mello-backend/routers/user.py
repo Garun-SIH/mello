@@ -255,7 +255,7 @@ async def get_personalized_recommendations(
     # Get recent assessments
     recent_assessment = db.query(Assessment).filter(
         Assessment.user_id == current_user.id
-    ).order_by(desc(Assessment.created_at)).first()
+    ).order_by(desc(Assessment.completed_at)).first()
     
     recommendations = []
     

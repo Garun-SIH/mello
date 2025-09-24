@@ -126,7 +126,16 @@ async def submit_assessment(assessment: AssessmentSubmission, db: Session = Depe
         db.commit()
         db.refresh(new_assessment)
         
-        return new_assessment
+        # Return properly formatted response
+        return {
+            "id": new_assessment.id,
+            "student_id": assessment.student_id,
+            "assessment_type": new_assessment.assessment_type,
+            "total_score": new_assessment.total_score,
+            "severity_level": new_assessment.severity_level,
+            "recommendations": new_assessment.recommendations,
+            "completed_at": new_assessment.completed_at
+        }
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error submitting assessment: {str(e)}")
@@ -139,9 +148,22 @@ async def get_assessment_history(student_id: str, db: Session = Depends(get_db))
     if not user:
         return AssessmentHistory(assessments=[], latest_scores={})
     
-    assessments = db.query(Assessment).filter(
+    assessments_raw = db.query(Assessment).filter(
         Assessment.user_id == user.id
     ).order_by(Assessment.completed_at.desc()).all()
+    
+    # Convert Assessment objects to AssessmentResponse format
+    assessments = []
+    for assessment in assessments_raw:
+        assessments.append({
+            "id": assessment.id,
+            "student_id": student_id,  # Use the student_id parameter
+            "assessment_type": assessment.assessment_type,
+            "total_score": assessment.total_score,
+            "severity_level": assessment.severity_level,
+            "recommendations": assessment.recommendations,
+            "completed_at": assessment.completed_at
+        })
     
     # Get latest scores for each assessment type
     latest_scores = {}

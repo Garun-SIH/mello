@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {Brain, Heart, TrendingUp, CheckCircle, AlertCircle, Info } from 'lucide-react';
 import axios from 'axios';
 
@@ -11,7 +11,6 @@ const Assessments = () => {
   const [result, setResult] = useState(null);
   const [history, setHistory] = useState(null);
   const [studentId] = useState(() => `student_${Math.random().toString(36).substr(2, 9)}`);
-
   const assessmentTypes = [
     {
       id: 'phq9',
@@ -39,11 +38,10 @@ const Assessments = () => {
     }
   ];
 
-  useEffect(() => {
-    fetchHistory();
-  });
+  // Removed automatic history loading to prevent infinite requests
+  // History will be loaded manually when needed
 
-  const fetchHistory = async () => {
+  const refreshHistory = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/assessments/history/${studentId}`);
       setHistory(response.data);
@@ -100,7 +98,7 @@ const Assessments = () => {
         responses: responses
       });
       setResult(response.data);
-      fetchHistory(); // Refresh history
+      refreshHistory(); // Refresh history
     } catch (error) {
       console.error('Error submitting assessment:', error);
     } finally {
@@ -139,6 +137,20 @@ const Assessments = () => {
             These tools can help identify areas where you might benefit from additional support.
           </p>
         </div>
+
+        {/* Load History Button */}
+        {!history && (
+          <div className="card mb-8 text-center">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Assessment History</h2>
+            <p className="text-gray-600 mb-4">View your previous assessment results and track your progress over time.</p>
+            <button 
+              onClick={refreshHistory}
+              className="btn-primary"
+            >
+              Load Assessment History
+            </button>
+          </div>
+        )}
 
         {/* Assessment History */}
         {history && history.latest_scores && Object.keys(history.latest_scores).length > 0 && (
