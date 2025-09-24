@@ -1,22 +1,27 @@
-from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, List
 from enum import Enum
+from typing import List, Optional
+
+from pydantic import BaseModel
+
 
 class CounselorStatus(str, Enum):
     PENDING = "pending"
     APPROVED = "approved"
     REJECTED = "rejected"
 
+
 # Chat schemas
 class ChatMessage(BaseModel):
     message: str
     student_id: Optional[str] = None
 
+
 class ChatResponse(BaseModel):
     response: str
     category: str
     escalate_to_counselor: bool = False
+
 
 # User schemas
 class UserCreate(BaseModel):
@@ -25,15 +30,17 @@ class UserCreate(BaseModel):
     email: str
     preferred_language: str = "en"
 
+
 class UserResponse(BaseModel):
     id: int
     student_id: str
     name: str
     email: str
     preferred_language: str
-    
+
     class Config:
         from_attributes = True
+
 
 # Booking schemas
 class BookingCreate(BaseModel):
@@ -41,6 +48,7 @@ class BookingCreate(BaseModel):
     counselor_id: int
     slot: datetime
     notes: Optional[str] = None
+
 
 class BookingResponse(BaseModel):
     id: int
@@ -50,24 +58,27 @@ class BookingResponse(BaseModel):
     status: str
     notes: Optional[str]
     counselor_name: str
-    
+
     class Config:
         from_attributes = True
+
 
 class CounselorResponse(BaseModel):
     id: int
     name: str
     specialization: str
     available_slots: str
-    
+
     class Config:
         from_attributes = True
+
 
 # Forum schemas
 class PostCreate(BaseModel):
     alias: str
     content: str
     category: Optional[str] = "general"
+
 
 class PostResponse(BaseModel):
     id: int
@@ -77,9 +88,10 @@ class PostResponse(BaseModel):
     timestamp: datetime
     likes: int
     category: str
-    
+
     class Config:
         from_attributes = True
+
 
 # Resource schemas
 class ResourceResponse(BaseModel):
@@ -91,9 +103,10 @@ class ResourceResponse(BaseModel):
     description: Optional[str]
     category: str
     duration: Optional[str]
-    
+
     class Config:
         from_attributes = True
+
 
 # Analytics schemas
 class AnalyticsResponse(BaseModel):
@@ -104,11 +117,13 @@ class AnalyticsResponse(BaseModel):
     total_posts: int
     popular_resources: List[dict]
 
+
 # Assessment schemas
 class AssessmentSubmission(BaseModel):
     student_id: str
     assessment_type: str  # phq9, gad7, ghq
     responses: List[int]
+
 
 class AssessmentResponse(BaseModel):
     id: int
@@ -118,9 +133,10 @@ class AssessmentResponse(BaseModel):
     severity_level: str
     recommendations: str
     completed_at: datetime
-    
+
     class Config:
         from_attributes = True
+
 
 class AssessmentHistory(BaseModel):
     assessments: List[AssessmentResponse]
