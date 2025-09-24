@@ -265,7 +265,7 @@ async def get_user_dashboard(
     recent_assessments = (
         db.query(Assessment)
         .filter(Assessment.user_id == current_user.id)
-        .order_by(desc(Assessment.created_at))
+        .order_by(desc(Assessment.completed_at))
         .limit(3)
         .all()
     )
