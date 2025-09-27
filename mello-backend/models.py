@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import enum
-from datetime import datetime
+from datetime import datetime, timezone
 
 from database import Base
 from sqlalchemy import (
@@ -54,9 +54,13 @@ class User(Base):
     )
 
     # Timestamps
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
 
     # Relationships
@@ -97,7 +101,9 @@ class ChatbotLog(Base):
     message: Mapped[str] = mapped_column(Text, nullable=False)
     response: Mapped[str] = mapped_column(Text, nullable=False)
     category: Mapped[str] = mapped_column(String(50))  # stress, sleep, anxiety, general
-    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     user: Mapped[User] = relationship("User", back_populates="chatbot_logs")
@@ -118,7 +124,9 @@ class Booking(Base):
         String(20), default="medium"
     )  # low, medium, high
     notes: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     user: Mapped[User] = relationship(
@@ -138,7 +146,9 @@ class Post(Base):
     content: Mapped[str] = mapped_column(Text, nullable=False)
     moderated: Mapped[bool] = mapped_column(Boolean, default=False)
     moderated_by: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    timestamp: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     likes: Mapped[int] = mapped_column(Integer, default=0)
     category: Mapped[str] = mapped_column(
         String(50)
@@ -167,7 +177,9 @@ class Resource(Base):
     uploaded_by: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id")
     )  # Admin who uploaded
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     uploader: Mapped[User] = relationship("User")
@@ -189,7 +201,9 @@ class Assessment(Base):
         String(50)
     )  # minimal, mild, moderate, severe
     recommendations: Mapped[str] = mapped_column(Text)
-    completed_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    completed_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     user: Mapped[User] = relationship("User", back_populates="assessments")
@@ -205,8 +219,9 @@ class MoodEntry(Base):
     stress_level: Mapped[int] = mapped_column(Integer, nullable=False)  # 1-10 scale
     sleep_hours: Mapped[float] = mapped_column(Float)
     notes: Mapped[str] = mapped_column(Text)
-    date: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-
+    date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     # Relationships
     user: Mapped[User] = relationship("User", back_populates="mood_entries")
 
@@ -234,7 +249,9 @@ class Feedback(Base):
     )  # JSON array of suggestions
     would_recommend: Mapped[bool] = mapped_column(Boolean, default=True)
     counselor_response: Mapped[str] = mapped_column(Text)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     user: Mapped[User] = relationship(
@@ -261,7 +278,9 @@ class Newsletter(Base):
     author_id: Mapped[int] = mapped_column(
         Integer, ForeignKey("users.id")
     )  # Admin who created
-    published_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    published_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     is_published: Mapped[bool] = mapped_column(Boolean, default=False)
 
     # Relationships
@@ -289,7 +308,9 @@ class CounselorReport(Base):
     session_date: Mapped[datetime] = mapped_column(DateTime)
     follow_up_required: Mapped[bool] = mapped_column(Boolean, default=False)
     next_session_date: Mapped[datetime] = mapped_column(DateTime)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     submitted_at: Mapped[datetime] = mapped_column(DateTime)
     reviewed_at: Mapped[datetime] = mapped_column(DateTime)
     reviewed_by: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
@@ -325,9 +346,13 @@ class ForumPost(Base):
     )  # approved, removed, edited
     reply_count: Mapped[int] = mapped_column(Integer, default=0)
     like_count: Mapped[int] = mapped_column(Integer, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
     updated_at: Mapped[datetime] = mapped_column(
-        DateTime, default=datetime.utcnow, onupdate=datetime.utcnow
+        DateTime(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc),
     )
 
     # Relationships
@@ -351,7 +376,9 @@ class ForumReply(Base):
     is_anonymous: Mapped[bool] = mapped_column(Boolean, default=True)
     is_flagged: Mapped[bool] = mapped_column(Boolean, default=False)
     like_count: Mapped[int] = mapped_column(Integer, default=0)
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     post: Mapped[list[ForumPost]] = relationship("ForumPost", back_populates="replies")
@@ -371,7 +398,9 @@ class AdminAnalytics(Base):
     date_range_start: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     date_range_end: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     generated_by: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
+    )
 
     # Relationships
     generator: Mapped[User] = relationship("User")

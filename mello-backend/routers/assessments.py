@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 from database import get_db
 from fastapi import APIRouter, Depends, HTTPException
@@ -136,7 +136,7 @@ async def submit_assessment(
             total_score=total_score,
             severity_level=severity,
             recommendations=recommendations,
-            completed_at=datetime.utcnow(),
+            completed_at=datetime.now(timezone.utc),
         )
 
         db.add(new_assessment)
