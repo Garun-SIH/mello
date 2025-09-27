@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from auth import get_admin_user
@@ -363,7 +363,7 @@ async def publish_newsletter(
 
     newsletter.is_published = not newsletter.is_published
     if newsletter.is_published:
-        newsletter.published_at = datetime.utcnow()
+        newsletter.published_at = datetime.now(timezone.utc)
 
     db.commit()
     return {

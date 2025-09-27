@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from auth import get_current_user
@@ -654,7 +654,7 @@ async def submit_counselor_report(
         raise HTTPException(status_code=400, detail="Report already submitted")
 
     report.status = "submitted"
-    report.submitted_at = datetime.utcnow()
+    report.submitted_at = datetime.now(timezone.utc)
     db.commit()
 
     return {"message": "Report submitted successfully"}

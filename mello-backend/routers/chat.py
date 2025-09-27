@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 import google.generativeai as genai
 from database import get_db
@@ -104,7 +104,7 @@ async def chat_with_bot(chat_message: ChatMessage, db: Session = Depends(get_db)
                 message=chat_message.message,
                 response=bot_response,
                 category=category,
-                timestamp=datetime.utcnow(),
+                timestamp=datetime.now(timezone.utc),
             )
             db.add(chat_log)
             db.commit()
